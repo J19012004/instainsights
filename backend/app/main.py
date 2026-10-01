@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.core.config import settings
 from app.db.database import Base, engine
 
 # Import models so SQLAlchemy registers all tables
@@ -25,12 +24,13 @@ Base.metadata.create_all(bind=engine)
 
 
 # =========================================================
-# APPLICATION
+# FASTAPI APPLICATION
 # =========================================================
 
 app = FastAPI(
-    title=settings.APP_NAME,
+    title="InstaInsights API",
     version="1.0.0",
+    description="Backend API for the InstaInsights Instagram Analytics Dashboard.",
 )
 
 
@@ -47,7 +47,7 @@ app.add_middleware(
         "http://localhost:5174",
         "http://127.0.0.1:5174",
 
-        # Render production frontend
+        # Production frontend
         "https://instainsights-frontend.onrender.com",
     ],
     allow_credentials=True,
@@ -57,7 +57,7 @@ app.add_middleware(
 
 
 # =========================================================
-# ROUTES
+# API ROUTES
 # =========================================================
 
 app.include_router(
@@ -67,13 +67,24 @@ app.include_router(
 
 
 # =========================================================
-# ROOT
+# ROOT ENDPOINT
 # =========================================================
 
 @app.get("/")
 def root():
     return {
-        "name": settings.APP_NAME,
+        "name": "InstaInsights API",
         "status": "running",
         "docs": "/docs",
+    }
+
+
+# =========================================================
+# HEALTH CHECK
+# =========================================================
+
+@app.get("/health")
+def health():
+    return {
+        "status": "ok"
     }
